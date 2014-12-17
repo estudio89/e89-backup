@@ -1,0 +1,90 @@
+Metadata-Version: 1.1
+Name: e89-backup
+Version: 1.0.0
+Summary: Aplicação para backups do banco de dados e enviá-los ao dropbox - Estúdio 89.
+Home-page: http://www.estudio89.com.br/
+Author: Luccas Correa
+Author-email: luccascorrea@estudio89.com.br
+License: BSD License
+Description: ===================================================================================================================================================================================
+        
+        E89 - BACKUP
+        
+        ===================================================================================================================================================================================
+        
+        O plugin E89 - BACKUP permite realizar um backup do banco de dados e enviá-lo a uma conta do dropbox.
+        
+        ===================================================================================================================================================================================
+        
+        Para utilizar o plugin, seguir os passos:
+        
+        1) Instalar o plugin e89_tools com pip e em seguida instalar esse plugin com pip.
+        
+        2) No arquivo settings.py, adicionar "e89_backup" e "e89_tools" na lista de INSTALLED_APPS.
+        
+        3) Inserir no arquivo settings.py as opções de configuração explicadas em sequência.
+        
+        4) Para realizar um backup, executar o comando: python manage.py backup_dropbox
+        
+        	ATENÇÃO: ao programar o cronjob que executará o comando acima, sempre programar para que antes seja executado o comando que faz o dump do banco de dados (explicado adiante).
+        
+        
+        
+        OPÇÕES NO ARQUIVO settings.py
+        ===============================
+        
+        Para funcionamento correto, as seguintes opções devem ser definidas no arquivo settings.py (valores mostrados como exemplo):
+        
+        	DB_BACKUP_DROPBOX_AUTHORIZATION_CODE = 'Aji4UwAEgKIAAAAAAAAACS0omLtcm_MtpC787Q_6qwLjEo5BDu1nHT81GHciY3Xv' (padrão para o e-mail adm.estudio89@gmail.com)
+        	DB_BACKUP_FILE_PATH = '/home/crmvparana/db_backups/crmvpr.sql'
+        	DB_BACKUP_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates', 'media','Profissionais'))
+        	DB_BACKUP_FREQUENCY = 3
+        	DB_BACKUP_MAX_KEEP = 3
+        
+        
+        	DB_BACKUP_DROPBOX_AUTHORIZATION_CODE
+        	------------------------------------
+        	Código de autorização do dropbox. Quando o usuário faz upload do arquivo .plist, o mesmo é enviado para o dropbox através de sua API de integração. Esse passo é necessário porque o servidor de hospedagem do arquivo .plist precisa ser https. O código padrão para a conta dropbox adm.estudio89@gmail.com é  Aji4UwAEgKIAAAAAAAAACS0omLtcm_MtpC787Q_6qwLjEo5BDu1nHT81GHciY3Xv
+        	Para mais informações de como obter o código para outra conta, visualizar https://www.dropbox.com/developers/core/start/python
+        
+        
+        	DB_BACKUP_FILE_PATH
+        	-------------------
+        	String com o caminho até o arquivo sql que contém os dados do banco de dados. Esse arquivo deve ser gerado sempre antes de executar o comando "backup_dropbox".
+        	Para gerar o arquivo sql, executar o comando:
+        
+        	mysqldump --defaults-file=<path_arquivo_password> -u <database_user> <database_name> > $HOME/db_backups/<nome_arquivo_backup>.sql 2>> $HOME/db_backups/cron.log
+        
+        	O arquivo que contém o password (<path_arquivo_password>) para acessar o banco deve conter as seguintes linhas:
+        	[client]
+        	password='mypassword'
+        
+        	No exemplo mostrado, o valor da opção DB_BACKUP_FILE_PATH deveria ser igual a $HOME/db_backups/<nome_arquivo_backup>.sql
+        
+        
+        	DB_BACKUP_DIRECTORY
+        	-------------------
+        	String com o caminho até o diretório que deve ser incluído no arquivo zip que será enviado ao dropbox.
+        
+        
+        	DB_BACKUP_FREQUENCY
+        	-------------------
+        	Número de dias entre 2 backups. Ex: para frequência 3, será feito backup nos dias n, n+3, n+6,...
+        
+        
+        	DB_BACKUP_MAX_KEEP
+        	--------------------
+        	Número máximo de backups que será mantido no dropbox.
+        
+        
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
